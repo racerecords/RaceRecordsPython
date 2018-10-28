@@ -5,8 +5,6 @@ ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
 }
 
 li {
@@ -17,4 +15,23 @@ li {
 label {
   margin: 10 0;
   font-weight: bold;
+}
+
+input {
+  width: 100%;
+}
+
+.border {
+  width: 50vw;
+  margin: 10px;
+  border: 1px solid gainsboro;
+  padding: 0 5px;
+}
+
+.flex {
+  display: flex;
+}
+
+h2 {
+  margin: 1;
 }

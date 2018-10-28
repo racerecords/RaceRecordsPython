@@ -1,0 +1,8 @@
+from bottle import get, post, request, run
+
+@post('/new')
+def create():
+    #password = request.forms.get('password')
+    print(request.post)
+
+run(host='0.0.0.0', port=9000, debug=True)
