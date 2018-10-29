@@ -1,7 +1,7 @@
 function reqListener () {
   res = JSON.parse(this.responseText);
-  populateMeta(res['meta']);
-  buildRows(res['readings']);
+  populateMeta(res);
+  fetchRows();
 }
 
 
@@ -12,9 +12,9 @@ function populateMeta (data) {
   var session = ["start","end"]
   var condition = ["temperature","humidity","barometer","weather","windSpeed","windDirection"]
   loop(meta, data);
-  loop(session, data['session']);
-  loop(meter, data['meter']);
-  loop(condition, data['condition']);
+  loop(session, data);
+  loop(meter, data);
+  loop(condition, data);
 }
 
 function loop (arr, data) {
@@ -25,23 +25,24 @@ function loop (arr, data) {
 }
 
 function populateElement(key, value) {
-  console.log(key)
   el = document.getElementById(key);
   el.innerHTML = value;
 }
 
-function buildRows (rows) {
+function buildRows () {
+  res = JSON.parse(this.responseText).readings;
+  console.log(res);
   table = document.getElementById('readingsTable');
   var i;
-  for (i=0; i < rows.length; i++) {
-    table.appendChild(buildRow(rows[i]));
+  for (i=0; i < res.length; i++) {
+    table.appendChild(buildRow(res[i]));
   }
 }
 
 function buildRow (record) {
   row = document.createElement('tr'); 
-  row.appendChild(buildData(record['carNumber']));
-  row.appendChild(buildData(record['class']));
+  row.appendChild(buildData(record['number']));
+  row.appendChild(buildData(record['carclass']));
   row.appendChild(buildData(record['reading']));
   return row;
 }
@@ -52,10 +53,16 @@ function buildData (value) {
   return td;
 }
 
+var path = window.location.href;
+
 var oReq = new XMLHttpRequest();
 oReq.addEventListener("load", reqListener);
-oReq.open("GET", "http://localhost:8000/js/report.json");
+oReq.open("POST", path);
 oReq.send();
 
-
-
+function fetchRows() {
+  var oReq = new XMLHttpRequest();
+  oReq.addEventListener("load", buildRows);
+  oReq.open("POST", path + '/readings');
+  oReq.send();
+}

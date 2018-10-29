@@ -15,7 +15,7 @@ class JSONModel:
         with open('%s%s.json' % (self.dir,self.uuid), 'w') as outfile:
             json.dump(self.__dict__, outfile)
 
-    def read(self, uuid):
+    def load(self, uuid):
         with open('%s%s.json' % (self.dir,uuid)) as json_data:
             data = json.load(json_data)
         self.__dict__ = data
@@ -25,10 +25,15 @@ class JSONModel:
         self.uuid = uuid.uuid4().int
         return self.uuid
 
+    def parse_json(self,data):
+        for key, value in data.items():
+          self.__dict__[key] = value[0]
+        return self.__dict__
+
 class Record(JSONModel):
 
     def __init__(self):
-        with open('js/template.json') as json_data:
+        with open('template.json') as json_data:
             data = json.load(json_data)
         self.__dict__ = data
         JSONModel.__init__(self,'record')
@@ -37,7 +42,7 @@ class Record(JSONModel):
         reading = Reading()
         lst = list()
         for uuid in self.readings:
-            lst.append(reading.read(uuid))
+            lst.append(reading.load(uuid))
         return lst
 
     def new_reading(self):
