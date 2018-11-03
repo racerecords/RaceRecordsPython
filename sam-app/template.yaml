@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    race-records
+
+    Race record keep app
+    
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+    Function:
+        Timeout: 3
+
+
+Resources:
+    SaveRecordFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: record/build
+            Handler: app.lambda_handler
+            Runtime: python3.6
+            Events:
+                SaveRecord:
+                    Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                    Properties:
+                        Path: /record
+                        Method: post
+    SaveReadingFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: reading/build
+            Handler: app.lambda_handler
+            Runtime: python3.6
+            Events:
+                SaveReading:
+                    Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                    Properties:
+                        Path: /reading
+                        Method: post
+Outputs:
+
+    SaveRecordApi:
+      Description: "API Gateway endpoint URL for Prod stage for Save Record function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/record/"
+
+    SaveRecordFunction:
+      Description: "Save Record Lambda Function ARN"
+      Value: !GetAtt SaveRecordFunction.Arn
+
+    SaveRecordFunctionIamRole:
+      Description: "Implicit IAM Role created for Save Record function"
+      Value: !GetAtt SaveRecordFunctionRole.Arn
+
+    SaveReadingApi:
+      Description: "API Gateway endpoint URL for Prod stage for Save Reading function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/reading/"
+
+    SaveReadingFunction:
+      Description: "Save Reading Lambda Function ARN"
+      Value: !GetAtt SaveReadingFunction.Arn
+
+    SaveReadingFunctionIamRole:
+      Description: "Implicit IAM Role created for Save Reading function"
+      Value: !GetAtt SaveReadingFunctionRole.Arn
