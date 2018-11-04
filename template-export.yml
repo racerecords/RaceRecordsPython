@@ -43,7 +43,7 @@ Outputs:
 Resources:
   SaveReadingFunction:
     Properties:
-      CodeUri: s3://race-test/faccba44d9d7effbfc9cc2d52778afe7
+      CodeUri: s3://aws-codestar-us-east-1-249502774627-race-records-pipe/faccba44d9d7effbfc9cc2d52778afe7
       Events:
         SaveReading:
           Properties:
@@ -55,7 +55,7 @@ Resources:
     Type: AWS::Serverless::Function
   SaveRecordFunction:
     Properties:
-      CodeUri: s3://race-test/81982209f212bce9794738b681532adb
+      CodeUri: s3://aws-codestar-us-east-1-249502774627-race-records-pipe/81982209f212bce9794738b681532adb
       Events:
         SaveRecord:
           Properties:
