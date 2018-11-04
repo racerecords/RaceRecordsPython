@@ -20,10 +20,6 @@ phases:
 #      - aws cloudformation package --region us-east-1 --template template.yaml --s3-bucket $S3_BUCKET --output-template template-export.yml
       - sam package --template-file template.yaml --output-template-file packaged.yaml --s3-bucket $S3_BUCKET
 
-
-bucket=race-records-package
-stackName=race-records-b
-
 artifacts:
   type: zip
   files:
