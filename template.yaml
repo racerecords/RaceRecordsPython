@@ -68,11 +68,11 @@ Resources:
           ErrorDocument: error.html
         CorsConfiguration:
           CorsRules:
-            AllowedOrigins: 
-              - *
-            AllowedMethods:
-              - GET,POST
-            AllowedHeader: *
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET,POST]
+              AllowedOrigins: ['*']
+              ExposedHeaders: [Date]
+              MaxAge: '3600'
 
     BucketPolicy:
       Type: AWS::S3::BucketPolicy

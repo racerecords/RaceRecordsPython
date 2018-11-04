@@ -1,2 +1,4 @@
 *.pdf
 *pycache*
+template-export.yml
+*.zip
