@@ -1,6 +1,10 @@
 #! /bin/bash
+cd ..
 export JEKYLL_VERSION=3.8
 case $1 in
+	build)
+		cmd='jekyll build'
+	;;
 	bash)
 		cmd='/bin/bash'
 	;;

@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+
+      # Upgrade AWS CLI to the latest version
+      - pip install --upgrade awscli
+
+#  pre_build:
+#    commands:
+#
+#      # Discover and run unit tests in the 'tests' directory. For more information, see <https://docs.python.org/3/library/unittest.html#test-discovery>
+#      - python -m unittest discover tests
+  
+  build:
+    commands:
+
+      # Use AWS SAM to package the application by using AWS CloudFormation
+      - docker run --rm -v "$PWD/jekyll" jekyll
+
+artifacts:
+  type: S3
+  location: 'race-records-jekyll'
+  files:
+    - "jekyll/_site/*"
