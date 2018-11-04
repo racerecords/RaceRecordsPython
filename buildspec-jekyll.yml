@@ -17,10 +17,12 @@ phases:
     commands:
 
       # Use AWS SAM to package the application by using AWS CloudFormation
-      - docker run --rm -v "$PWD/jekyll" jekyll/jekyll:3.8 jekyll build
+#      - docker run --rm -v "$PWD/jekyll:/srv/jekyll" jekyll/jekyll:3.8 jekyll build
+      - cd jekyll
+      - bundle install 
+      - jekyll build
 
 artifacts:
   type: S3
   location: 'race-records-jekyll'
-  files:
-    - "jekyll/_site/*"
+  files: 'jekyll/_site/*'
