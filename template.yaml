@@ -5,6 +5,7 @@ Transform:
 
 Parameters:
   ProjectId:
+    Default: race-records
     Type: String
     Description: CodeStar projectId used to associate new resources to team members
 
