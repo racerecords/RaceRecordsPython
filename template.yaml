@@ -41,6 +41,75 @@ Resources:
                     Properties:
                         Path: /reading
                         Method: post
+
+    Records:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: race-records-json
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: error.html
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET,POST]
+              AllowedOrigins: ['*']
+              ExposedHeaders: [Date]
+              MaxAge: '3600'
+
+    Jekyll:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName:  race-records-jekyll
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: error.html
+        CorsConfiguration:
+          CorsRules:
+            AllowedOrigins: 
+              - *
+            AllowedMethods:
+              - GET,POST
+            AllowedHeader: *
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref Records
+        PolicyDocument:
+          Id: WebHostingJson
+          Version: 2012-10-17
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref Records
+                  - /*
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref Jekyll
+        PolicyDocument:
+          Id: WebHostingJekyll
+          Version: 2012-10-17
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref Jekyll
+                  - /*
+
 Outputs:
 
     SaveRecordApi:
@@ -66,3 +135,19 @@ Outputs:
     SaveReadingFunctionIamRole:
       Description: "Implicit IAM Role created for Save Reading function"
       Value: !GetAtt SaveReadingFunctionRole.Arn
+
+    WebsiteURL:
+      Value: !GetAtt [Jekyll, WebsiteURL]
+      Description: URL for website hosted on S3
+
+    S3BucketSecureURL:
+      Value: !Join ['', ['https://', !GetAtt [Jekyll, DomainName]]]
+      Description: Name of S3 bucket to hold website content
+
+    WebsiteURL:
+      Value: !GetAtt [Records, WebsiteURL]
+      Description: URL for website hosted on S3
+
+    S3BucketSecureURL:
+      Value: !Join ['', ['https://', !GetAtt [Records, DomainName]]]
+      Description: Name of S3 bucket to hold website content
