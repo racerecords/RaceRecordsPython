@@ -4,8 +4,7 @@ phases:
   install:
     commands:
 
-      # Upgrade AWS CLI to the latest version
-      - pip install --upgrade awscli
+      - bundle install 
 
 #  pre_build:
 #    commands:
@@ -15,12 +14,10 @@ phases:
   
   build:
     commands:
-
-      # Use AWS SAM to package the application by using AWS CloudFormation
-      - docker run --rm -v "$PWD/jekyll" jekyll/jekyll:3.8 jekyll build
+      - jekyll build
 
 artifacts:
   type: S3
+  base-directory: '_site'
   location: 'race-records-jekyll'
-  files:
-    - "jekyll/_site/*"
+  files: '**/*'
