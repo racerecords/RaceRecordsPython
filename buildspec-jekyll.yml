@@ -20,9 +20,13 @@ phases:
 #      - docker run --rm -v "$PWD/jekyll:/srv/jekyll" jekyll/jekyll:3.8 jekyll build
       - cd jekyll
       - bundle install 
+      - pwd
+      - ls
       - jekyll build
+      - pwd
+      - ls _site
 
 artifacts:
   type: S3
   location: 'race-records-jekyll'
-  files: 'jekyll/_site/*'
+  files: "jekyll/_site/*"

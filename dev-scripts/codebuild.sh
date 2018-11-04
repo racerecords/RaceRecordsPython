@@ -97,6 +97,8 @@ then
     docker_command+="$(env | grep ^AWS_ | while read -r line; do echo " -e \"$line\""; done )"
 fi
 
+docker_command+=" -v 'codebuild-gems:/usr/local/bundle'"
+
 docker_command+=" amazon/aws-codebuild-local:latest"
 
 # Note we do not expose the AWS_SECRET_ACCESS_KEY or the AWS_SESSION_TOKEN
