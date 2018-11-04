@@ -19,10 +19,9 @@ Parameters:
 #       Type: Canary10Percent5Minutes
 
 Resources:
-    SaveRecordFunction:
+    SaveRecord:
         Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
         Properties:
-            CodeUri: record/build
             Handler: app.lambda_handler
             Runtime: python3.6
             Events:
@@ -31,10 +30,9 @@ Resources:
                     Properties:
                         Path: /record
                         Method: post
-    SaveReadingFunction:
+    SaveReading:
         Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
         Properties:
-            CodeUri: reading/build
             Handler: app.lambda_handler
             Runtime: python3.6
             Events:
