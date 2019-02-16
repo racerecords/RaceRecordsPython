@@ -112,6 +112,16 @@ Resources:
                 - - 'arn:aws:s3:::'
                   - !Ref Jekyll
                   - /*
+    myDNSRecord:
+      Type: AWS::Route53::RecordSet
+      Properties:
+        HostedZoneId: ZTZVQU6WGITSI
+        Name: api.covecode.com.
+        Type: CNAME
+        TTL: '900'
+        ResourceRecords:
+        - '5ham45cla1.execute-api.us-east-1.amazonaws.com/Prod/'
+#        - !GetAtt AWS::ApiGateway::RestApi .attributeName
 
 Outputs:
 
@@ -154,3 +164,9 @@ Outputs:
     S3BucketSecureURL:
       Value: !Join ['', ['https://', !GetAtt [Records, DomainName]]]
       Description: Name of S3 bucket to hold website content
+Cors:
+  AllowMethods: 'GET,POST'
+  AllowHeaders: '*'
+  # For example, "'X-Forwarded-For'". Checkout [HTTP Spec](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers) for more details on the value
+  AllowOrigin: '*'
+  # For example, "'www.example.com'". Checkout [HTTP Spec](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) for more details on this value.
