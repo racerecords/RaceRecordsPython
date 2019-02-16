@@ -14,4 +14,5 @@ pytest-mock = "*"
 [packages]
 requests = "*"
 boto3 = "*"
+botocore = "*"
 uuid = "*"
