@@ -8,8 +8,13 @@ python_version = "3.6"
 
 [dev-packages]
 moto = "*"
-boto = "*"
+pytest = "*"
+pytest-mock = "*"
 
 [packages]
 requests = "*"
-
+boto3 = "*"
+uuid = "*"
+json = "*"
+urllib = "*"
+logging = "*"
