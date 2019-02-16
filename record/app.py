@@ -4,8 +4,12 @@ import logging
 import uuid
 from urllib import parse
 import boto3
-import botocore
 import requests
+
+BUCKET_NAME = "race-records"
+MESSAGES = {'errors': []}
+LOCAL = True
+S3 = boto3.resource("s3")
 
 
 def lambda_handler(event, context):
@@ -13,7 +17,6 @@ def lambda_handler(event, context):
     try:
 #        obj = json.loads(str(event['body']).encode('utf-8'))
         obj = parse_qs(event['body'])
-        logging.info(obj)
         file_id = str(uuid.uuid4())
         file_name = file_id + ".json"
         # lambda_path = "records/save"
