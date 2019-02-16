@@ -1,81 +1,116 @@
-from collections import namedtuple
+"""Testing S3 lambada function"""
 import json
-
+import boto3
 import pytest
-
+from moto import mock_s3
 from record import app
 
+EXAMPLE = 'bb85bfc0-225f-4ac1-99cc-716db2641177'
 
 @pytest.fixture()
 def apigw_event():
     """ Generates API GW Event"""
+    return {'httpMethod': 'POST',
+            'body': "name=test_name&\
+                    weather=asdf&\
+                    temperature=&\
+                    humidity=&\
+                    barometer=&\
+                    windSpeed=&\
+                    windDirection=&\
+                    group=&\
+                    track=&\
+                    region=&\
+                    date=&\
+                    session=&\
+                    start=&\
+                    end=&\
+                    classes=&\
+                    ambientBefore=&\
+                    reader=&\
+                    recorder=&\
+                    siteCertificationDate=&\
+                    factoryCalibrationDate=&\
+                    fieldCalibrationTime=&\
+                    batteryLevel=&\
+                    microphoneLocation=",
+            'resource': '/record'
+            }
 
-    return {
-        "body": '{ "test": "body"}',
-        "resource": "/{proxy+}",
-        "requestContext": {
-            "resourceId": "123456",
-            "apiId": "1234567890",
-            "resourcePath": "/{proxy+}",
-            "httpMethod": "POST",
-            "requestId": "c6af9ac6-7b61-11e6-9a41-93e8deadbeef",
-            "accountId": "123456789012",
-            "identity": {
-                "apiKey": "",
-                "userArn": "",
-                "cognitoAuthenticationType": "",
-                "caller": "",
-                "userAgent": "Custom User Agent String",
-                "user": "",
-                "cognitoIdentityPoolId": "",
-                "cognitoIdentityId": "",
-                "cognitoAuthenticationProvider": "",
-                "sourceIp": "127.0.0.1",
-                "accountId": "",
-            },
-            "stage": "prod",
-        },
-        "queryStringParameters": {"foo": "bar"},
-        "headers": {
-            "Via": "1.1 08f323deadbeefa7af34d5feb414ce27.cloudfront.net (CloudFront)",
-            "Accept-Language": "en-US,en;q=0.8",
-            "CloudFront-Is-Desktop-Viewer": "true",
-            "CloudFront-Is-SmartTV-Viewer": "false",
-            "CloudFront-Is-Mobile-Viewer": "false",
-            "X-Forwarded-For": "127.0.0.1, 127.0.0.2",
-            "CloudFront-Viewer-Country": "US",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-            "Upgrade-Insecure-Requests": "1",
-            "X-Forwarded-Port": "443",
-            "Host": "1234567890.execute-api.us-east-1.amazonaws.com",
-            "X-Forwarded-Proto": "https",
-            "X-Amz-Cf-Id": "aaaaaaaaaae3VYQb9jd-nvCd-de396Uhbp027Y2JvkCPNLmGJHqlaA==",
-            "CloudFront-Is-Tablet-Viewer": "false",
-            "Cache-Control": "max-age=0",
-            "User-Agent": "Custom User Agent String",
-            "CloudFront-Forwarded-Proto": "https",
-            "Accept-Encoding": "gzip, deflate, sdch",
-        },
-        "pathParameters": {"proxy": "/examplepath"},
-        "httpMethod": "POST",
-        "stageVariables": {"baz": "qux"},
-        "path": "/examplepath",
+@pytest.fixture()
+def fixture_record():
+    """Fixture for a record"""
+    return {"name": "example",
+            "weather": "Clear",
+            "temperature": "70",
+            "humidity": "60",
+            "barometer": "30",
+            "windSpeed": "2",
+            "windDirection": "South",
+            "group": "10",
+            "track": "DMV",
+            "region": "DC",
+            "date": "2018-07-01",
+            "session": "3",
+            "start": "2018-07-01T13:00",
+            "end": "2018-07-01T16:00",
+            "classes": "A,B",
+            "ambientBefore": "20",
+            "reader": "Me",
+            "recorder": "Myself",
+            "siteCertificationDate": "2018-05-30",
+            "factoryCalibrationDate": "2010-05-20",
+            "fieldCalibrationTime": "2018-07-01T12:00",
+            "batteryLevel": "100",
+            "microphoneLocation": "Finish Line"
+            }
+
+@pytest.fixture()
+def fixture_bucket(fixture_record):
+    """Fixture for index.json"""
+    mock = mock_s3()
+    mock.start()
+    conn = boto3.resource('s3', region_name='us-east-1')
+    conn.create_bucket(Bucket='race-records')
+    index = {
+        'example': EXAMPLE,
+        'test': '72443892-7cbf-4422-beba-58e046322340',
+        'test3': '235eabc7-46ff-4373-8b7e-bbd054bd3fda',
+        'test4': '6ea39e8f-6826-426d-b7ff-b3e100cb6cdf',
     }
+    conn.Object('race-records', 'records/index.json').put(Body=json.dumps(index))
+    conn.Object('race-records', "records/%s.json" %(EXAMPLE)).put(Body=json.dumps(fixture_record))
+    yield
+    mock.stop()
 
+def test_parse_qs(apigw_event):
+    """Put object"""
+    res = app.parse_qs(apigw_event['body'])
 
-def test_lambda_handler(apigw_event, mocker):
+    assert isinstance(res, dict)
+    assert res['name'] == 'test_name'
 
-    requests_response_mock = namedtuple("response", ["text"])
-    requests_response_mock.text = "1.1.1.1\n"
+def test_get_index(fixture_bucket):
+    """Should read the index.json"""
+    fixture_bucket
+    res = app.get_index()
 
-    request_mock = mocker.patch.object(
-        app.requests, 'get', side_effect=requests_response_mock)
+    assert res['example'] == EXAMPLE
 
-    ret = app.lambda_handler(apigw_event, "")
-    assert ret["statusCode"] == 200
+def test_record_exist(fixture_bucket):
+    """Should return boolean value"""
+    fixture_bucket
 
-    for key in ("message", "location"):
-        assert key in ret["body"]
+    assert app.record_exist('example')
+    assert not app.record_exist('does_not_exist')
 
-    data = json.loads(ret["body"])
-    assert data["message"] == "hello world"
+@mock_s3
+def test_push_to_s3():
+    """Should put object in s3 as json"""
+    conn = boto3.resource('s3', region_name='us-east-1')
+    conn.create_bucket(Bucket='race-records')
+    app.push_to_s3('test', {'json':'test content'})
+    body = conn.Object('race-records', 'records/test').get()['Body'].read().decode()
+
+    assert 'test content' in body
+    assert isinstance(json.loads(body), dict)
