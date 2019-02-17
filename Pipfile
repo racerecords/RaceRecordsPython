@@ -3,16 +3,17 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[requires]
-python_version = "3.6"
-
 [dev-packages]
 moto = "*"
+v = {editable = true,version = "*"}
 pytest = "*"
 pytest-mock = "*"
 
 [packages]
-requests = "*"
 boto3 = "*"
 botocore = "*"
+requests = "*"
 uuid = "*"
+
+[requires]
+python_version = "3.6"
