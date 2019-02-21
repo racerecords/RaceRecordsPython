@@ -15,9 +15,10 @@ phases:
   
   build:
     commands:
-
+      - pipenv install -dev
+      - pipenv run pytest tests
       # Use AWS SAM to package the application by using AWS CloudFormation
-      - aws cloudformation package --region us-east-1 --template template.yaml --s3-bucket $S3_BUCKET --output-template template-export.yml
+      # - aws cloudformation package --region us-east-1 --template template.yaml --s3-bucket $S3_BUCKET --output-template template-export.yml
 
 artifacts:
   type: zip
