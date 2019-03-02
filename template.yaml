@@ -32,19 +32,6 @@ Resources:
                     Properties:
                         Path: /record
                         Method: post
-    SaveReadingFunction:
-        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-        Properties:
-            CodeUri: record/
-            Handler: app.lambda_handler
-            Runtime: python3.6
-            Events:
-                SaveReading:
-                    Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-                    Properties:
-                        Path: /reading
-                        Method: post
-
     Records:
       Type: AWS::S3::Bucket
       Properties:
@@ -136,10 +123,6 @@ Outputs:
     SaveRecordFunctionIamRole:
       Description: "Implicit IAM Role created for Save Record function"
       Value: !GetAtt SaveRecordFunctionRole.Arn
-
-    SaveReadingApi:
-      Description: "API Gateway endpoint URL for Prod stage for Save Reading function"
-      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/reading/"
 
     SaveReadingFunction:
       Description: "Save Reading Lambda Function ARN"
